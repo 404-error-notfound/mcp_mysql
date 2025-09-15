@@ -220,7 +220,7 @@ uv run server.py --stdio
       "name": "mysql",
       "command": "uv",
       "args": [
-        "--directory", "C:\\path\\to\\mcp_mysql",
+        "--directory", "C:\\path\\to\\mcp_mysql\\src",
         "run", "server.py", "--stdio"
       ],
       "env": {
@@ -243,7 +243,7 @@ uv run server.py --stdio
       "name": "mysql",
       "command": "uv",
       "args": [
-        "--directory", "/path/to/mcp_mysql",
+        "--directory", "/path/to/mcp_mysql/src",
         "run", "server.py", "--stdio"
       ],
       "env": {
