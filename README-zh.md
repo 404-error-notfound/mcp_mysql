@@ -84,7 +84,44 @@
 
 ### 安装
 
+#### 📦 安装 UV 包管理器
+
+**Windows 系统：**
+```powershell
+# 使用 PowerShell（推荐）
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# 或使用 pip
+pip install uv
+
+# 或使用 Chocolatey
+choco install uv
+
+# 或使用 Scoop
+scoop install uv
+```
+
+**Linux/macOS 系统：**
+```bash
+# 使用 curl
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 或使用 pip
+pip install uv
+```
+
+#### 🔽 项目设置
+
 1. **克隆并安装依赖：**
+
+   **Windows (PowerShell)：**
+   ```powershell
+   git clone <repository-url>
+   cd mcp_mysql
+   uv sync
+   ```
+
+   **Linux/macOS：**
    ```bash
    git clone <repository-url>
    cd mcp_mysql
@@ -92,8 +129,24 @@
    ```
 
 2. **配置数据库连接：**
-   
-   创建 `.env` 文件：
+
+   在项目根目录创建 `.env` 文件：
+
+   **Windows (PowerShell)：**
+   ```powershell
+   # 使用 PowerShell 创建 .env 文件
+   @"
+   # MySQL 数据库配置
+   MYSQL_HOST=localhost
+   MYSQL_PORT=3306
+   MYSQL_USER=your_username
+   MYSQL_PASSWORD=your_password
+   # MYSQL_DATABASE=specific_db  # 可选：留空则可跨数据库访问
+   MYSQL_ROLE=admin  # 选项：readonly, writer, admin
+   "@ | Out-File -FilePath ".env" -Encoding utf8
+   ```
+
+   **或手动创建 `.env` 文件，内容如下：**
    ```env
    # MySQL 数据库配置
    MYSQL_HOST=localhost
@@ -104,9 +157,26 @@
    MYSQL_ROLE=admin  # 选项：readonly, writer, admin
    ```
 
+   **远程 MySQL 服务器配置示例：**
+   ```env
+   MYSQL_HOST=192.168.1.100
+   MYSQL_PORT=3306
+   MYSQL_USER=root
+   MYSQL_PASSWORD=your_secure_password
+   MYSQL_ROLE=admin
+   ```
+
 ### 运行服务器
 
 #### SSE 模式（基于 Web）
+
+**Windows (PowerShell)：**
+```powershell
+# 启动 SSE 服务器，监听 http://localhost:9000
+uv run server.py
+```
+
+**Linux/macOS：**
 ```bash
 # 启动 SSE 服务器，监听 http://localhost:9000
 uv run server.py
@@ -127,12 +197,45 @@ uv run server.py
 ```
 
 #### STDIO 模式（直接集成）
+
+**Windows (PowerShell)：**
+```powershell
+# 启动 STDIO 服务器
+uv run server.py --stdio
+```
+
+**Linux/macOS：**
 ```bash
 # 启动 STDIO 服务器
 uv run server.py --stdio
 ```
 
 **MCP 客户端配置（STDIO）：**
+
+**Windows：**
+```json
+{
+  "mcpServers": {
+    "mysql": {
+      "name": "mysql",
+      "command": "uv",
+      "args": [
+        "--directory", "C:\\path\\to\\mcp_mysql",
+        "run", "server.py", "--stdio"
+      ],
+      "env": {
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "your_username",
+        "MYSQL_PASSWORD": "your_password",
+        "MYSQL_ROLE": "admin"
+      }
+    }
+  }
+}
+```
+
+**Linux/macOS：**
 ```json
 {
   "mcpServers": {
@@ -154,6 +257,37 @@ uv run server.py --stdio
   }
 }
 ```
+
+## 🛠️ Windows 专用配置说明
+
+### 常见问题及解决方案
+
+**PowerShell 执行策略：**
+如果遇到执行策略错误，请运行：
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+**路径分隔符：**
+- 在 JSON 配置中使用双反斜杠 `\\` 或正斜杠 `/`
+- 示例：`"C:\\Users\\YourName\\mcp_mysql"` 或 `"C:/Users/YourName/mcp_mysql"`
+
+**Windows 环境变量设置：**
+```powershell
+# 临时设置环境变量（当前会话）
+$env:MYSQL_HOST = "localhost"
+$env:MYSQL_USER = "your_username"
+$env:MYSQL_PASSWORD = "your_password"
+
+# 使用环境变量运行服务器
+uv run server.py --stdio
+```
+
+**Windows 防火墙：**
+如果连接远程 MySQL 服务器，请确保 MySQL 端口（默认 3306）已通过 Windows 防火墙允许。
+
+**字符编码问题：**
+确保 `.env` 文件使用 UTF-8 编码保存，特别是包含中文字符时。
 
 ## 🔧 扩展自定义工具
 

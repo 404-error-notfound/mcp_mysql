@@ -84,7 +84,44 @@ A comprehensive Model Context Protocol (MCP) server for MySQL database operation
 
 ### Installation
 
+#### 📦 Installing UV Package Manager
+
+**Windows:**
+```powershell
+# Using PowerShell (Recommended)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Or using pip
+pip install uv
+
+# Or using Chocolatey
+choco install uv
+
+# Or using Scoop
+scoop install uv
+```
+
+**Linux/macOS:**
+```bash
+# Using curl
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Or using pip
+pip install uv
+```
+
+#### 🔽 Project Setup
+
 1. **Clone and install dependencies:**
+
+   **Windows (PowerShell):**
+   ```powershell
+   git clone <repository-url>
+   cd mcp_mysql
+   uv sync
+   ```
+
+   **Linux/macOS:**
    ```bash
    git clone <repository-url>
    cd mcp_mysql
@@ -92,8 +129,24 @@ A comprehensive Model Context Protocol (MCP) server for MySQL database operation
    ```
 
 2. **Configure database connection:**
-   
-   Create a `.env` file:
+
+   Create a `.env` file in the project root directory:
+
+   **Windows (PowerShell):**
+   ```powershell
+   # Create .env file using PowerShell
+   @"
+   # MySQL Database Configuration
+   MYSQL_HOST=localhost
+   MYSQL_PORT=3306
+   MYSQL_USER=your_username
+   MYSQL_PASSWORD=your_password
+   # MYSQL_DATABASE=specific_db  # Optional: leave empty for cross-database access
+   MYSQL_ROLE=admin  # Options: readonly, writer, admin
+   "@ | Out-File -FilePath ".env" -Encoding utf8
+   ```
+
+   **Or manually create `.env` file with content:**
    ```env
    # MySQL Database Configuration
    MYSQL_HOST=localhost
@@ -104,9 +157,26 @@ A comprehensive Model Context Protocol (MCP) server for MySQL database operation
    MYSQL_ROLE=admin  # Options: readonly, writer, admin
    ```
 
+   **For remote MySQL server (example):**
+   ```env
+   MYSQL_HOST=192.168.1.100
+   MYSQL_PORT=3306
+   MYSQL_USER=root
+   MYSQL_PASSWORD=your_secure_password
+   MYSQL_ROLE=admin
+   ```
+
 ### Running the Server
 
 #### SSE Mode (Web-based)
+
+**Windows (PowerShell):**
+```powershell
+# Start SSE server on http://localhost:9000
+uv run server.py
+```
+
+**Linux/macOS:**
 ```bash
 # Start SSE server on http://localhost:9000
 uv run server.py
@@ -127,12 +197,45 @@ uv run server.py
 ```
 
 #### STDIO Mode (Direct integration)
+
+**Windows (PowerShell):**
+```powershell
+# Start STDIO server
+uv run server.py --stdio
+```
+
+**Linux/macOS:**
 ```bash
 # Start STDIO server
 uv run server.py --stdio
 ```
 
 **MCP Client Configuration (STDIO):**
+
+**Windows:**
+```json
+{
+  "mcpServers": {
+    "mysql": {
+      "name": "mysql",
+      "command": "uv",
+      "args": [
+        "--directory", "C:\\path\\to\\mcp_mysql",
+        "run", "server.py", "--stdio"
+      ],
+      "env": {
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "your_username",
+        "MYSQL_PASSWORD": "your_password",
+        "MYSQL_ROLE": "admin"
+      }
+    }
+  }
+}
+```
+
+**Linux/macOS:**
 ```json
 {
   "mcpServers": {
@@ -154,6 +257,34 @@ uv run server.py --stdio
   }
 }
 ```
+
+## 🛠️ Windows-Specific Configuration Notes
+
+### Common Issues and Solutions
+
+**PowerShell Execution Policy:**
+If you encounter execution policy errors, run:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+**Path Separators:**
+- Use double backslashes `\\` or forward slashes `/` in JSON configuration
+- Example: `"C:\\Users\\YourName\\mcp_mysql"` or `"C:/Users/YourName/mcp_mysql"`
+
+**Environment Variables in Windows:**
+```powershell
+# Set environment variables temporarily (current session)
+$env:MYSQL_HOST = "localhost"
+$env:MYSQL_USER = "your_username"
+$env:MYSQL_PASSWORD = "your_password"
+
+# Run the server with environment variables
+uv run server.py --stdio
+```
+
+**Windows Firewall:**
+Ensure MySQL port (default 3306) is allowed through Windows Firewall if connecting to remote MySQL server.
 
 ## 🔧 Extending with Custom Tools
 
