@@ -1,85 +1,124 @@
 [![简体中文](https://img.shields.io/badge/简体中文-点击查看-orange)](README-zh.md)
 [![English](https://img.shields.io/badge/English-Click-yellow)](README.md)
 
-# mcp_mysql_server
+# MySQL MCP Server
 
-## Introduction
-mcp_mysql_server_pro is not just about MySQL CRUD operations, but also includes database anomaly analysis capabilities and makes it easy for developers to extend with custom tools.
+A comprehensive Model Context Protocol (MCP) server for MySQL database operations with advanced features for database analysis, health monitoring, and AI-assisted database management.
 
-- Supports both STDIO and SSE modes
-- **Supports access to all databases without connecting to a specific database**
-- Supports multiple SQL execution, separated by ";"
-- Supports querying database table names and fields based on table comments
-- Supports SQL execution plan analysis
-- Supports Chinese field to pinyin conversion
-- Supports table lock analysis
-- Supports database health status analysis
-- Supports permission control with three roles: readonly, writer, and admin
-    ```
-    "readonly": ["SELECT", "SHOW", "DESCRIBE", "EXPLAIN", "USE"],  # Read-only permissions
-    
-    "writer": ["SELECT", "SHOW", "DESCRIBE", "EXPLAIN", "INSERT", "UPDATE", "DELETE", "USE"],  # Read-write permissions
-    
-    "admin": [
-        # Complete database administrator permissions, including:
-        # Query permissions: SELECT, SHOW, DESCRIBE, EXPLAIN
-        # Database usage: USE
-        # Data operations: INSERT, UPDATE, DELETE, REPLACE, LOAD
-        # Table structure management: CREATE, ALTER, DROP, TRUNCATE, RENAME
-        # Database management: CREATE DATABASE, DROP DATABASE, ALTER DATABASE
-        # Index management: CREATE INDEX, DROP INDEX, ALTER INDEX
-        # View management: CREATE VIEW, DROP VIEW, ALTER VIEW
-        # Stored procedures/functions: CREATE/DROP/ALTER PROCEDURE/FUNCTION
-        # Triggers: CREATE TRIGGER, DROP TRIGGER
-        # Event scheduler: CREATE/DROP/ALTER EVENT
-        # User management: CREATE/DROP/ALTER/RENAME USER, GRANT, REVOKE
-        # System administration: SHUTDOWN, RELOAD, LOCK, UNLOCK, PROCESS, SUPER
-        # Backup and recovery: BACKUP, RESTORE, BACKUP_ADMIN, BINLOG_ADMIN
-        # Replication management: REPLICATION SLAVE/CLIENT, REPLICATION_SLAVE_ADMIN
-        # Performance tuning: OPTIMIZE, ANALYZE, CHECK, CHECKSUM, REPAIR
-        # Temporary tables: CREATE TEMPORARY TABLES
-        # File operations: FILE, SELECT INTO OUTFILE, LOAD DATA
-        # Other advanced permissions: REFERENCES, USAGE, EXECUTE, etc.
-    ]  # Complete database administrator permissions
-    ```
-    
-    **Note**: The permission system supports recognizing SQL statements with comments (supports `--` and `/* */` comment formats), automatically skipping comment lines for permission verification.
-- Supports prompt template invocation
+## 🚀 Features
 
-## Tool List
-| Tool Name                  | Description                                                                                                                                                                                                              |
-|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
-| execute_sql                | SQL execution tool that can access all databases and supports complete MySQL operations based on permission configuration: readonly (queries), writer (CRUD operations), admin (complete database administration including database creation, user management, backup/recovery, etc.) |
-| get_databases              | Get a list of all available databases on the MySQL server (excluding system databases)                                                                                                                                   |
-| get_chinese_initials       | Convert Chinese field names to pinyin initials                                                                                                                                                                           |
-| get_db_health_running      | Analyze MySQL health status (connection status, transaction status, running status, lock detection)                                                                                                                      |
-| get_table_desc             | Search for table structures in all databases based on table names, supports multi-table queries and database.table_name format                                                                                          |
-| get_table_index            | Search for table indexes in all databases based on table names, supports multi-table queries and database.table_name format                                                                                             |
-| get_table_lock             | Query whether there are row-level locks and table-level locks on the current MySQL server                                                                                                                               |
-| get_table_name             | Search for table names in all databases based on table comments and descriptions                                                                                                                                         |
-| get_db_health_index_usage  | Get index usage of MySQL databases, including redundant indexes, poorly performing indexes, and top 5 unused indexes with query times greater than 30 seconds, supports specifying database for analysis            |
+**MySQL MCP Server** goes beyond basic CRUD operations, providing powerful database analysis capabilities and an extensible framework for custom tools.
 
-## Prompt List
-| Prompt Name               | Description                                                                                    |
-|---------------------------|------------------------------------------------------------------------------------------------| 
-| analyzing-mysql-prompt    | This is a prompt for analyzing MySQL-related issues                                           |
-| query-table-data-prompt   | This is a prompt for querying table data using tools. If description is empty, it will be initialized as a MySQL database query assistant |
+### 🔌 Transport Modes
+- **STDIO Mode**: Direct integration with MCP clients like Cursor, Cline
+- **SSE Mode**: HTTP-based Server-Sent Events for web applications
 
-## Usage Instructions
+### 🗄️ Database Operations
+- **Cross-Database Access**: Connect once, access all databases without switching connections
+- **Multi-Statement Execution**: Execute multiple SQL statements separated by ";"
+- **Smart Table Discovery**: Find tables by comments and descriptions
+- **SQL Execution Plan Analysis**: Performance optimization insights
 
-### SSE Mode
+### 🛡️ Security & Permissions
+- **Role-Based Access Control**: Three permission levels (readonly, writer, admin)
+- **SQL Comment Support**: Handles SQL statements with `--` and `/* */` comments
 
-- Use uv to start the service
+### 🔍 Advanced Analysis
+- **Health Monitoring**: Connection, transaction, and lock status analysis
+- **Performance Insights**: Index usage analysis and optimization recommendations
+- **Lock Detection**: Row-level and table-level lock monitoring
+- **Chinese Text Processing**: Pinyin conversion for Chinese field names
 
-Add the following content to your mcp client tools, such as cursor, cline, etc.
+### 🤖 AI Integration
+- **Prompt Templates**: Pre-built AI prompts for database analysis and querying
+- **Context-Aware Assistance**: Intelligent database operation guidance
 
-mcp json as follows:
+## 📋 Permission Levels
+
+| Role | Permissions | Use Case |
+|------|-------------|----------|
+| **readonly** | `SELECT`, `SHOW`, `DESCRIBE`, `EXPLAIN`, `USE` | Read-only access for reporting and analysis |
+| **writer** | readonly + `INSERT`, `UPDATE`, `DELETE` | Application development and data manipulation |
+| **admin** | Full database administration | Complete database management including DDL, user management, backup/recovery |
+
+## 🛠️ Available Tools
+
+### Database Operations
+| Tool | Description |
+|------|-------------|
+| `execute_sql` | Execute SQL statements with role-based permission control |
+| `get_databases` | List all available databases (excluding system databases) |
+
+### Schema Discovery
+| Tool | Description |
+|------|-------------|
+| `get_table_desc` | Get table structures across databases (supports `database.table` format) |
+| `get_table_index` | Retrieve table indexes with cross-database support |
+| `get_table_name` | Find tables by comments and descriptions |
+
+### Performance & Health
+| Tool | Description |
+|------|-------------|
+| `get_db_health_running` | Analyze MySQL health (connections, transactions, locks) |
+| `get_db_health_index_usage` | Index usage analysis with performance recommendations |
+| `get_table_lock` | Detect row-level and table-level locks |
+
+### Utilities
+| Tool | Description |
+|------|-------------|
+| `get_chinese_initials` | Convert Chinese field names to pinyin initials |
+
+## 🤖 AI Prompt Templates
+
+| Prompt Template | Purpose |
+|----------------|----------|
+| `analyzing-mysql-prompt` | Comprehensive MySQL issue analysis and troubleshooting |
+| `query-table-data-prompt` | Intelligent table data querying with AI assistance |
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.10+
+- UV package manager
+- MySQL server
+
+### Installation
+
+1. **Clone and install dependencies:**
+   ```bash
+   git clone <repository-url>
+   cd mcp_mysql
+   uv sync
+   ```
+
+2. **Configure database connection:**
+   
+   Create a `.env` file:
+   ```env
+   # MySQL Database Configuration
+   MYSQL_HOST=localhost
+   MYSQL_PORT=3306
+   MYSQL_USER=your_username
+   MYSQL_PASSWORD=your_password
+   # MYSQL_DATABASE=specific_db  # Optional: leave empty for cross-database access
+   MYSQL_ROLE=admin  # Options: readonly, writer, admin
+   ```
+
+### Running the Server
+
+#### SSE Mode (Web-based)
+```bash
+# Start SSE server on http://localhost:9000
+uv run server.py
 ```
+
+**MCP Client Configuration (SSE):**
+```json
 {
   "mcpServers": {
-    "operateMysql": {
-      "name": "operateMysql",
-      "description": "",
+    "mysql": {
+      "name": "mysql",
+      "description": "MySQL database operations",
       "isActive": true,
       "baseUrl": "http://localhost:9000/sse"
     }
@@ -87,129 +126,127 @@ mcp json as follows:
 }
 ```
 
-Modify the .env file content to update the database connection information with your database details:
-```
-# MySQL Database Configuration
-MYSQL_HOST=192.168.xxx.xxx
-MYSQL_PORT=3306
-MYSQL_USER=root
-MYSQL_PASSWORD=root
-# MYSQL_DATABASE=a_llm  # Optional: if not specified, can access all databases
-MYSQL_ROLE=admin  # Optional, default is 'readonly'. Available values: readonly, writer, admin
+#### STDIO Mode (Direct integration)
+```bash
+# Start STDIO server
+uv run server.py --stdio
 ```
 
-Start commands:
-```
-# Download dependencies
-uv sync
-
-# Start
-uv run server.py
-```
-
-### STDIO Mode
-
-Add the following content to your mcp client tools, such as cursor, cline, etc.
-
-mcp json as follows:
-```
+**MCP Client Configuration (STDIO):**
+```json
 {
   "mcpServers": {
-      "operateMysql": {
-        "isActive": true,
-        "name": "operateMysql",
-        "command": "uv",
-        "args": [
-          "--directory",
-          "G:\\python\\mysql_mcp\\src",  # Replace this with your project path
-          "run",
-          "server.py",
-          "--stdio"
-        ],
-        "env": {
-          "MYSQL_HOST": "192.168.xxx.xxx",
-          "MYSQL_PORT": "3306",
-          "MYSQL_USER": "root",
-          "MYSQL_PASSWORD": "root",
-          // "MYSQL_DATABASE": "a_llm",  // Optional: if not specified, can access all databases
-          "MYSQL_ROLE": "admin"  # Optional, default is 'readonly'. Available values: readonly, writer, admin
-       }
+    "mysql": {
+      "name": "mysql",
+      "command": "uv",
+      "args": [
+        "--directory", "/path/to/mcp_mysql",
+        "run", "server.py", "--stdio"
+      ],
+      "env": {
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "your_username",
+        "MYSQL_PASSWORD": "your_password",
+        "MYSQL_ROLE": "admin"
+      }
     }
   }
-}    
+}
 ```
 
-## Custom Tool Extensions
-1. Add a new tool class in the handles package, inherit from BaseHandler, and implement get_tool_description and run_tool methods
+## 🔧 Extending with Custom Tools
 
-2. Import the new tool in __init__.py to make it available in the server
+1. **Create a new tool class:**
+   ```python
+   # src/handles/my_custom_tool.py
+   from .base import BaseHandler
+   from mcp.types import Tool, TextContent
+   
+   class MyCustomTool(BaseHandler):
+       name = "my_custom_tool"
+       description = "Description of what this tool does"
+       
+       def get_tool_description(self) -> Tool:
+           # Define tool schema
+           pass
+           
+       async def run_tool(self, arguments: dict) -> list[TextContent]:
+           # Implement tool logic
+           pass
+   ```
 
-## Cross-Database Operation Examples
+2. **Register the tool:**
+   ```python
+   # src/handles/__init__.py
+   from .my_custom_tool import MyCustomTool
+   
+   __all__ = [..., "MyCustomTool"]
+   ```
 
-Now you can:
+## 💡 Usage Examples
 
-1. **View all databases**:
+### Cross-Database Operations
+
+**List all databases:**
 ```
-Use the get_databases tool to view all available databases
+Use get_databases tool
 ```
 
-2. **Cross-database queries**:
+**Cross-database queries:**
 ```sql
-SELECT * FROM database1.table1 
-UNION ALL 
-SELECT * FROM database2.table1;
+SELECT u.name, o.total 
+FROM users_db.users u
+JOIN orders_db.orders o ON u.id = o.user_id;
 ```
 
-3. **Specify database operations**:
-```sql
-USE database_name;
-SELECT * FROM table_name;
+**Table structure analysis:**
+```
+get_table_desc: "users_db.users,orders_db.orders"
 ```
 
-4. **Cross-database table structure queries**:
+### AI-Assisted Operations
+
+**Performance Analysis:**
 ```
-Use get_table_desc tool to query: database1.table1,database2.table2
+Analyze this slow query and suggest optimizations:
+SELECT * FROM large_table lt 
+LEFT JOIN another_table at ON lt.id = at.foreign_id 
+WHERE lt.created_date > '2024-01-01'
 ```
 
-## Examples
-1. Create a new table and insert data, prompt format as follows:
+**Health Monitoring:**
 ```
-# Task
-   Create an organizational structure table in database_name with the following structure: department name, department number, parent department, is valid.
-# Requirements
- - Table name: t_admin_rms_zzjg
- - Field requirements: string type uses 'varchar(255)', integer type uses 'int', float type uses 'float', date and time type uses 'datetime', boolean type uses 'boolean', text type uses 'text', large text type uses 'longtext', large integer type uses 'bigint', large float type uses 'double'
- - Table header needs to include primary key field, serial number XH varchar(255)
- - Table must include these fixed fields at the end: creator-CJR varchar(50), creation time-CJSJ datetime, modifier-XGR varchar(50), modification time-XGSJ datetime
- - Field naming should use tool return content
- - Common fields need indexes
- - Each field needs comments, table needs comment
- - Generate 5 real data records after creation
+Check MySQL health status and identify any performance issues
 ```
 
-2. Query data based on table comments, prompt as follows:
+**Smart Table Discovery:**
 ```
-Query Zhang San's data from the user information table
-```
-
-3. Analyze slow SQL, prompt as follows:
-```
-select * from database_name.t_jcsjzx_hjkq_cd_xsz_sk xsz
-left join database_name.t_jcsjzx_hjkq_jcd jcd on jcd.cddm = xsz.cddm 
-Based on current index situation, review execution plan and provide optimization suggestions in markdown format, including table index status, execution details, and optimization recommendations
+Find all tables related to user management across all databases
 ```
 
-4. Analyze SQL deadlock issues, prompt as follows:
+**Deadlock Analysis:**
 ```
-update database_name.t_admin_rms_zzjg set sfyx = '0' where xh = '1' is stuck, please analyze the cause
-```
-
-5. Analyze the health status prompt as follows
-```
-Check the current health status of MySQL
+Analyze why this UPDATE statement is stuck:
+UPDATE users SET status = 'active' WHERE id = 123
 ```
 
-6. Cross-database query example
-```
-Query all user table data from database1 and database2
-```
+## 📖 Documentation
+
+- [Development Guide](CLAUDE.md) - For developers working with this codebase
+- [API Reference](src/) - Detailed tool and prompt documentation
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Add your custom tools or improvements
+4. Submit a pull request
+
+## 📄 License
+
+This project is open source. Please check the license file for details.
+
+---
+
+**Star this repository if you find it helpful! ⭐**
